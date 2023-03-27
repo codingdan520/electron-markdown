@@ -2,11 +2,21 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import { join } from 'node:path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
+    }),
     electron([
       // 主进程配置
       {
@@ -42,4 +52,25 @@ export default defineConfig({
       nodeIntegration: true,
     })
   ],
+  resolve: {
+    alias: [
+      {
+        find: '@',
+        replacement: join(__dirname, 'src')
+      },
+      {
+        find: '#',
+        replacement: join(__dirname, 'electron')  
+      }
+    ]
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // 两种方式都可以
+        additionalData: '@import "@/assets/scss/global.scss";'
+        // additionalData: '@use "@/assets/scss/global.scss" as *;'
+      }
+    }
+  },
 })
