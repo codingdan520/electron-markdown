@@ -1,2 +1,8 @@
 $font-color-gray: rgb(147,147,147);
 $font-color-red: red;
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

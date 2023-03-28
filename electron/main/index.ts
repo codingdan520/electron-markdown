@@ -21,6 +21,7 @@ let mainWind: BrowserWindow | null = null;
 function createWind() {
     mainWind = new BrowserWindow({
         icon: join(process.env.PUBLIC, "favicon.ico"),
+        show: false,
         webPreferences: {
             preload,
             // 渲染进程可以调用 node 中的方法
@@ -40,6 +41,9 @@ function createWind() {
         // 打包后加载路径
         mainWind.loadFile(indexHtml);
     }
+    mainWind.once("ready-to-show",() => {
+        mainWind?.show();
+    })
 }
 
 app.whenReady().then(() => {
