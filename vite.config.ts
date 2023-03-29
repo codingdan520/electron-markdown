@@ -14,6 +14,7 @@ export default defineConfig({
     vue(),
     eslintPlugin({
       include: ['src/**/*.ts', 'src/**/*.vue', 'src/*.ts', 'src/*.vue', 'electron/*.ts', 'electron/**/*.ts'],
+      cache: false,
     }),
     AutoImport({
       resolvers: [ElementPlusResolver()],

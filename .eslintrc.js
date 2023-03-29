@@ -44,11 +44,12 @@ module.exports = {
     // 'vue/require-v-for-key': 'off', // 对保留元素检查 vue3中v-for会自动追加key值，所以不用再强制添加key属性，所以不检查key的填写
     // 'vue/valid-v-for': 'off', // 对于非保留(自定义)元素检查  vue3中v-for会自动追加key值，所以不用再强制添加key属性，所以不检查key的填写
     // // 添加组件命名忽略规则 vue官方默认规则是多单词驼峰来进行组件命名
+    'vue/multi-word-component-names': 'off',
     // 'vue/multi-word-component-names': [
-    // 	'warn',
-    // 	{
-    // 		ignores: ['index'], //需要忽略的组件名
-    // 	},
+    //   'warn',
+    //   {
+    //     ignores: ['index'], //需要忽略的组件名
+    //   },
     // ],
   },
 };

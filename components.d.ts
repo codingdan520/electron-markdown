@@ -13,6 +13,7 @@ declare module '@vue/runtime-core' {
     ButtonItem: typeof import('./src/components/aside/ButtonItem.vue')['default']
     EditInput: typeof import('./src/components/aside/EditInput.vue')['default']
     EditItem: typeof import('./src/components/aside/EditItem.vue')['default']
+    Editor: typeof import('./src/components/content/Editor.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCol: typeof import('element-plus/es')['ElCol']
@@ -21,9 +22,13 @@ declare module '@vue/runtime-core' {
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
     ElRow: typeof import('element-plus/es')['ElRow']
+    ElTabPane: typeof import('element-plus/es')['ElTabPane']
+    ElTabs: typeof import('element-plus/es')['ElTabs']
     FileItem: typeof import('./src/components/aside/FileItem.vue')['default']
     FileList: typeof import('./src/components/aside/FileList.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    Markdown: typeof import('./src/components/content/Markdown.vue')['default']
     SearchFile: typeof import('./src/components/aside/SearchFile.vue')['default']
+    TabList: typeof import('./src/components/content/TabList.vue')['default']
   }
 }

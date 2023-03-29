@@ -46,12 +46,13 @@ const search = (vlaue: string) => {
 
 <style scoped lang="scss">
 .search-box {
-  height: 40px;
-  line-height: 40px;
+  height: 50px;
+  line-height: 50px;
   display: flex;
   align-items: center;
   border-bottom: 1px solid #ccc;
   padding: 5px;
+  box-sizing: border-box;
   .text {
     width: 100%;
     & > div {

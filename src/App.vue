@@ -4,6 +4,7 @@ import SearchFile from '@/components/aside/SearchFile.vue';
 import FileList from '@/components/aside/FileList.vue';
 import fileListData from '@/mock/initFiles';
 import ButtonGroup from '@/components/aside/ButtonGroup.vue';
+import TabList from '@/components/content/TabList.vue';
 
 let fileList = ref(fileListData);
 
@@ -48,7 +49,7 @@ const exportFile = () => {
         <ButtonGroup @create-file="createFile" @export-file="exportFile" />
       </div>
     </el-col>
-    <el-col :span="18" class="content"> 右侧 </el-col>
+    <el-col :span="18" class="content"> <TabList :file-list="fileList" /> </el-col>
   </el-row>
 </template>
 
@@ -60,6 +61,7 @@ const exportFile = () => {
     flex-direction: column;
     justify-content: space-between;
     background-color: #e3f2d6;
+    box-shadow: 2px 2px 1px 0px #b8dec6;
   }
 }
 </style>
