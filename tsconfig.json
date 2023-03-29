@@ -25,6 +25,7 @@
     "src/**/*.vue",
     "electron/**/*.ts",
     "electron/**/*.d.ts",
+    "auto-imports.d.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

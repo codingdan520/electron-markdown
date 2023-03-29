@@ -5,21 +5,21 @@ import renderer from 'vite-plugin-electron-renderer';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
+import eslintPlugin from 'vite-plugin-eslint';
 import { join } from 'node:path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
+    eslintPlugin({
+      include: ['src/**/*.ts', 'src/**/*.vue', 'src/*.ts', 'src/*.vue', 'electron/*.ts', 'electron/**/*.ts'],
+    }),
     AutoImport({
-      resolvers: [
-        ElementPlusResolver(),
-      ],
+      resolvers: [ElementPlusResolver()],
     }),
     Components({
-      resolvers: [
-        ElementPlusResolver(),
-      ],
+      resolvers: [ElementPlusResolver()],
     }),
     electron([
       // 主进程配置
@@ -28,7 +28,7 @@ export default defineConfig({
         entry: 'electron/main/index.ts',
         onstart(options) {
           // 启动electron 项目
-          options.startup()
+          options.startup();
         },
         vite: {
           build: {
@@ -42,39 +42,39 @@ export default defineConfig({
         entry: 'electron/preload/index.ts',
         onstart(options) {
           // 加载渲染进程配置
-          options.reload()
+          options.reload();
         },
         vite: {
           build: {
             outDir: 'dist-electron/preload',
           },
         },
-      }
+      },
     ]),
     renderer({
       // 渲染进程融入node
       nodeIntegration: true,
-    })
+    }),
   ],
   resolve: {
     alias: [
       {
         find: '@',
-        replacement: join(__dirname, 'src')
+        replacement: join(__dirname, 'src'),
       },
       {
         find: '#',
-        replacement: join(__dirname, 'electron')  
-      }
-    ]
+        replacement: join(__dirname, 'electron'),
+      },
+    ],
   },
   css: {
     preprocessorOptions: {
       scss: {
         // 两种方式都可以
-        additionalData: '@import "@/assets/scss/global.scss";'
+        additionalData: '@import "@/assets/scss/global.scss";',
         // additionalData: '@use "@/assets/scss/global.scss" as *;'
-      }
-    }
+      },
+    },
   },
-})
+});
