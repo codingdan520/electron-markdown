@@ -8,9 +8,11 @@ const props = defineProps<{
 }>();
 
 let activeId = ref('1');
+const editorRef = ref();
 
 const removeTab = (targetName: string) => {
   console.log(targetName);
+  editorRef.value.initHtml(targetName);
 };
 </script>
 
@@ -18,7 +20,7 @@ const removeTab = (targetName: string) => {
   <el-tabs v-model="activeId" type="card" class="demo-tabs" closable @tab-remove="removeTab">
     <el-tab-pane v-for="item in fileList" :key="item.id" :label="item.title" :name="item.id"></el-tab-pane>
   </el-tabs>
-  <Editor />
+  <Editor ref="editorRef" />
 </template>
 
 <style scoped lang="scss">

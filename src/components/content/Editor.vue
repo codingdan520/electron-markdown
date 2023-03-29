@@ -11,15 +11,12 @@ const mode = ref<'default' | 'simple'>('default');
 // 内容 HTML
 const valueHtml = ref('<p>hello</p>');
 
-// 模拟 ajax 异步获取内容
-onMounted(() => {
-  setTimeout(() => {
-    valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>';
-  }, 1500);
-});
-
 const toolbarConfig = {};
 const editorConfig = { placeholder: '请输入内容...' };
+
+const initHtml = (value: string) => {
+  valueHtml.value = value;
+};
 
 // 组件销毁时，也及时销毁编辑器
 onBeforeUnmount(() => {
@@ -31,10 +28,15 @@ onBeforeUnmount(() => {
 const handleCreated = async (editor: any) => {
   editorRef.value = editor; // 记录 editor 实例，重要！
   await nextTick();
+  // 查看已有配置
   const toolbar = DomEditor.getToolbar(editor);
   const curToolbarConfig = toolbar?.getConfig();
   console.log(curToolbarConfig); // 当前菜单排序和分组
 };
+
+defineExpose({
+  initHtml,
+});
 </script>
 
 <template>
