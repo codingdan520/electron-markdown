@@ -51,8 +51,9 @@ const submitEdit = (id: string, value: string) => {
 
 <style scoped lang="scss">
 .file-list {
-  margin-top: 10px;
-
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  padding: 10px 5px;
   li {
     height: 40px;
     line-height: 40px;

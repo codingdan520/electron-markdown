@@ -2,8 +2,8 @@
 import { ref } from 'vue';
 import SearchFile from '@/components/aside/SearchFile.vue';
 import FileList from '@/components/aside/FileList.vue';
-import fileListData from './mock/initFiles';
-// import type { IfileList } from '@/types/fileList';
+import fileListData from '@/mock/initFiles';
+import ButtonGroup from '@/components/aside/ButtonGroup.vue';
 
 let fileList = ref(fileListData);
 
@@ -28,13 +28,25 @@ const editFile = (id: string, value: string) => {
     } catch (e) {}
   });
 };
+
+const createFile = () => {
+  console.log(1);
+};
+const exportFile = () => {
+  console.log(2);
+};
 </script>
 
 <template>
   <el-row class="container">
     <el-col :span="6" class="aside">
-      <SearchFile title="我的文档" @search="searchFile" />
-      <FileList :file-list="fileList" @delete-file="deleteFile" @edit-file="editFile" />
+      <div class="up">
+        <SearchFile title="我的文档" @search="searchFile" />
+        <FileList :file-list="fileList" @delete-file="deleteFile" @edit-file="editFile" />
+      </div>
+      <div class="down">
+        <ButtonGroup @create-file="createFile" @export-file="exportFile" />
+      </div>
     </el-col>
     <el-col :span="18" class="content"> 右侧 </el-col>
   </el-row>
@@ -43,10 +55,11 @@ const editFile = (id: string, value: string) => {
 <style scoped lang="scss">
 .container {
   height: 100vh;
-
   .aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     background-color: #e3f2d6;
-    padding: 5px;
   }
 }
 </style>

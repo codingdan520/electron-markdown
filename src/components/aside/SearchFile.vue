@@ -35,7 +35,7 @@ const search = (vlaue: string) => {
 <template>
   <div class="search-box">
     <div v-show="!searchActive" class="text flex-between">
-      <span>{{ title }}</span>
+      <div>{{ title }}</div>
       <el-icon size="20" @click="toggleSearch()">
         <Search />
       </el-icon>
@@ -48,14 +48,19 @@ const search = (vlaue: string) => {
 .search-box {
   height: 40px;
   line-height: 40px;
+  display: flex;
+  align-items: center;
   border-bottom: 1px solid #ccc;
+  padding: 5px;
   .text {
+    width: 100%;
+    & > div {
+      flex: 1;
+    }
     & > :last-child {
+      width: 40px;
       cursor: pointer;
     }
-  }
-  .el-icon {
-    width: 40px;
   }
 }
 </style>

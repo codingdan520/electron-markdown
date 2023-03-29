@@ -9,6 +9,8 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    ButtonGroup: typeof import('./src/components/aside/ButtonGroup.vue')['default']
+    ButtonItem: typeof import('./src/components/aside/ButtonItem.vue')['default']
     EditInput: typeof import('./src/components/aside/EditInput.vue')['default']
     EditItem: typeof import('./src/components/aside/EditItem.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
