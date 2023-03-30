@@ -12,6 +12,7 @@ const activeId = ref<boolean | string>(false);
 const emit = defineEmits<{
   (e: 'edit-file', fileId: string, value: string): void;
   (e: 'delete-file', fileId: string): void;
+  (e: 'show-markdown', fileId: string): void;
 }>();
 
 const deleteFile = (fileId: string) => {
@@ -29,11 +30,15 @@ const submitEdit = (id: string, value: string) => {
   emit('edit-file', id, value);
   close();
 };
+
+const showMarkdown = (id: string) => {
+  emit('show-markdown', id);
+};
 </script>
 
 <template>
   <ul class="file-list">
-    <li v-for="item in fileList" :key="item.id">
+    <li v-for="item in fileList" :key="item.id" @click="showMarkdown(item.id)">
       <EditInput
         v-show="activeId === item.id"
         :show="activeId === item.id"

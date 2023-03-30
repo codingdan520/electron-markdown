@@ -9,7 +9,7 @@ const editorRef = shallowRef();
 const mode = ref<'default' | 'simple'>('default');
 
 // 内容 HTML
-const valueHtml = ref('<p>hello</p>');
+const valueHtml = ref('');
 
 const toolbarConfig = {};
 const editorConfig = { placeholder: '请输入内容...' };
@@ -31,7 +31,7 @@ const handleCreated = async (editor: any) => {
   // 查看已有配置
   const toolbar = DomEditor.getToolbar(editor);
   const curToolbarConfig = toolbar?.getConfig();
-  console.log(curToolbarConfig); // 当前菜单排序和分组
+  // console.log(curToolbarConfig); // 当前菜单排序和分组
 };
 
 defineExpose({

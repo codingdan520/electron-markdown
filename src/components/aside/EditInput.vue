@@ -55,9 +55,9 @@ const search = (e: KeyboardEvent) => {
       v-model="searchValue"
       placeholder="请输入文本后再按enter键"
       type="text"
-      @keyup="(e: KeyboardEvent) => {search(e)}"
+      @keyup.stop="(e: KeyboardEvent) => {search(e)}"
     />
-    <el-icon color="red" size="16" @click="emit('close')">
+    <el-icon color="red" size="16" @click.stop="emit('close')">
       <Close />
     </el-icon>
   </div>

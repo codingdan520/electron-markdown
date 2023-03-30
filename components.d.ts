@@ -30,5 +30,6 @@ declare module '@vue/runtime-core' {
     Markdown: typeof import('./src/components/content/Markdown.vue')['default']
     SearchFile: typeof import('./src/components/aside/SearchFile.vue')['default']
     TabList: typeof import('./src/components/content/TabList.vue')['default']
+    Tabs: typeof import('./src/components/content/Tabs.vue')['default']
   }
 }

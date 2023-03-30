@@ -32,10 +32,10 @@ const editFile = () => {
     <el-col :span="15">
       <span>{{ file.title }}</span>
     </el-col>
-    <el-col :span="3" @click="editFile">
+    <el-col :span="3" @click.stop="editFile">
       <el-icon><Edit /></el-icon>
     </el-col>
-    <el-col :span="3" @click="deletFile">
+    <el-col :span="3" @click.stop="deletFile">
       <el-icon><Delete /></el-icon>
     </el-col>
   </el-row>
