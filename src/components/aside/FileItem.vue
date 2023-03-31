@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { Document, Edit, Delete } from '@element-plus/icons-vue';
 import type { IfileList } from '@/types/fileList';
 
 const props = defineProps<{
+  active: boolean;
   file: IfileList;
 }>();
 
@@ -25,7 +27,7 @@ const editFile = () => {
 </script>
 
 <template>
-  <el-row>
+  <el-row class="file-item" :class="{ actived: active }">
     <el-col :span="3">
       <el-icon><Document /></el-icon>
     </el-col>
@@ -41,4 +43,11 @@ const editFile = () => {
   </el-row>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.file-item {
+  padding: 0 5px;
+}
+.actived {
+  background-color: #b8dec6;
+}
+</style>

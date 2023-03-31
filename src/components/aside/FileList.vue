@@ -4,10 +4,11 @@ import FileItem from '@/components/aside/FileItem.vue';
 import EditInput from '@/components/aside/EditInput.vue';
 import { ref } from 'vue';
 const props = defineProps<{
+  activeId: string;
   fileList: IfileList[];
 }>();
 
-const activeId = ref<boolean | string>(false);
+const editTitleId = ref<boolean | string>(false);
 
 const emit = defineEmits<{
   (e: 'edit-file', fileId: string, value: string): void;
@@ -20,11 +21,18 @@ const deleteFile = (fileId: string) => {
 };
 
 const editFile = (file: IfileList) => {
-  activeId.value = file.id;
+  editTitleId.value = file.id;
+  // 如果存在正在新增的文件时，点击其他编辑，需要删除正在新增的文件
+  const newFile = props.fileList.find((item) => item.isNew);
+  newFile && emit('delete-file', newFile.id);
 };
 
-const close = () => {
-  activeId.value = false;
+const close = (file?: IfileList) => {
+  editTitleId.value = false;
+  // 修复新建时，退出
+  if (file?.isNew) {
+    emit('delete-file', file.id);
+  }
 };
 const submitEdit = (id: string, value: string) => {
   emit('edit-file', id, value);
@@ -32,6 +40,7 @@ const submitEdit = (id: string, value: string) => {
 };
 
 const showMarkdown = (id: string) => {
+  editTitleId.value = false;
   emit('show-markdown', id);
 };
 </script>
@@ -40,16 +49,26 @@ const showMarkdown = (id: string) => {
   <ul class="file-list">
     <li v-for="item in fileList" :key="item.id" @click="showMarkdown(item.id)">
       <EditInput
-        v-show="activeId === item.id"
-        :show="activeId === item.id"
-        @close="close"
+        v-show="editTitleId === item.id || item.isNew"
+        :show="editTitleId === item.id || item.isNew"
+        @close="
+          () => {
+            close(item);
+          }
+        "
         @search="
           (value) => {
             submitEdit(item.id, value);
           }
         "
       />
-      <FileItem v-show="activeId !== item.id" :file="item" @delete-file="deleteFile" @edit-file="editFile" />
+      <FileItem
+        v-show="editTitleId !== item.id && !item.isNew"
+        :active="activeId === item.id"
+        :file="item"
+        @delete-file="deleteFile"
+        @edit-file="editFile"
+      />
     </li>
   </ul>
 </template>
@@ -58,10 +77,10 @@ const showMarkdown = (id: string) => {
 .file-list {
   max-height: calc(100vh - 100px);
   overflow-y: auto;
-  padding: 10px 5px;
   li {
-    height: 40px;
-    line-height: 40px;
+    height: 50px;
+    line-height: 50px;
+    border-bottom: 1px solid #ccc;
   }
 }
 </style>

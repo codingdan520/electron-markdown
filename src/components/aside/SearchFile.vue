@@ -24,12 +24,16 @@ const toggleSearch = async () => {
 
 const close = () => {
   searchActive.value = false;
+  emit('search', '');
 };
 
 const search = (vlaue: string) => {
-  emit('search', vlaue);
-  close();
+  emit('search', vlaue.trim());
 };
+
+defineExpose({
+  close,
+});
 </script>
 
 <template>
@@ -51,10 +55,9 @@ const search = (vlaue: string) => {
   display: flex;
   align-items: center;
   border-bottom: 1px solid #ccc;
-  padding: 5px;
-  box-sizing: border-box;
   .text {
     width: 100%;
+    padding: 5px;
     & > div {
       flex: 1;
     }

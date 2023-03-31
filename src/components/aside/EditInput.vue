@@ -21,7 +21,6 @@ const input = ref();
 watch(
   () => props.show,
   () => {
-    console.log(props.show);
     if (props.show) {
       input.value.focus();
     } else {
@@ -31,7 +30,11 @@ watch(
 );
 
 const search = (e: KeyboardEvent) => {
-  if (props.isValidate && !searchValue.value) {
+  if (e.code === 'Escape') {
+    emit('close');
+    return;
+  }
+  if (props.isValidate && !searchValue.value.trim()) {
     // eslint-disable-next-line no-undef
     ElMessage({
       message: '请输入文本后再按 enter 键！',
@@ -40,10 +43,7 @@ const search = (e: KeyboardEvent) => {
     return;
   }
   if (e.code === 'Enter') {
-    emit('search', searchValue.value);
-  }
-  if (e.code === 'Escape') {
-    emit('close');
+    emit('search', searchValue.value.trim());
   }
 };
 </script>
@@ -55,7 +55,8 @@ const search = (e: KeyboardEvent) => {
       v-model="searchValue"
       placeholder="请输入文本后再按enter键"
       type="text"
-      @keyup.stop="(e: KeyboardEvent) => {search(e)}"
+      @keyup.enter.esc="(e: KeyboardEvent) => {search(e)}"
+      @click="(e:Event) => e.stopPropagation()"
     />
     <el-icon color="red" size="16" @click.stop="emit('close')">
       <Close />
@@ -64,6 +65,14 @@ const search = (e: KeyboardEvent) => {
 </template>
 
 <style scoped lang="scss">
+.create {
+  width: 100%;
+  height: 100%;
+}
+.el-input {
+  flex: 1;
+  margin-left: 5px;
+}
 .el-icon {
   width: 40px;
   cursor: pointer;

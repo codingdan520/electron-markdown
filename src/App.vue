@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, nextTick, onMounted, computed, watch } from 'vue';
+import { ref, nextTick, computed, watch } from 'vue';
+import { v4 as uuid } from 'uuid';
 import SearchFile from '@/components/aside/SearchFile.vue';
 import FileList from '@/components/aside/FileList.vue';
 import fileListData from '@/mock/initFiles';
@@ -8,21 +9,38 @@ import Tabs from '@/components/content/Tabs.vue';
 import Editor from '@/components/content/Editor.vue';
 import type { IfileList } from './types/fileList';
 
+let activeId = ref('');
+let searchRef = ref();
 let fileList = ref<IfileList[]>(fileListData);
-let activeId = ref();
+let searchFileList = ref<IfileList[]>([]);
 
 watch(activeId, (curent: string) => {
   const content = getActiveMarkdowContent(curent);
   setHtml(content);
 });
 
+const showFileList = computed(() => {
+  return searchFileList.value.length ? searchFileList.value : fileList.value;
+});
+
 const searchFile = (value: string) => {
-  console.log(value);
-  fileList.value = fileList.value.filter((item) => item.title.includes(value));
+  if (!value) {
+    searchFileList.value = [];
+    return;
+  }
+  searchFileList.value = fileList.value.filter((item) => item.title.includes(value));
+  console.log(searchFileList.value);
 };
 
 const deleteFile = (fileId: string) => {
   fileList.value = fileList.value.filter((item) => item.id !== fileId);
+  // 修复搜索情况下删除bug
+  searchFileList.value = searchFileList.value.filter((item) => item.id !== fileId);
+  closeTab(fileId);
+  // 修复只有一个展示项时，关闭搜索框
+  if (searchFileList.value.length === 0) {
+    searchRef.value.close();
+  }
 };
 
 const editFile = (id: string, value: string) => {
@@ -31,6 +49,7 @@ const editFile = (id: string, value: string) => {
     try {
       if (item.id === id) {
         item.title = value;
+        item.isNew = false;
         throw new Error();
       }
       // eslint-disable-next-line no-empty
@@ -39,21 +58,41 @@ const editFile = (id: string, value: string) => {
 };
 
 const createFile = () => {
-  console.log(1);
+  // 判断是否已经有新建文件
+  const onceFileFlag = fileList.value.find((item) => item.isNew);
+  if (onceFileFlag) {
+    return;
+  }
+  // 新建文档时，关闭搜索 bug
+  searchRef.value.close();
+  const newFile: IfileList = {
+    id: uuid(),
+    isNew: true,
+    title: '',
+    body: '## 初始化内容',
+    createTime: new Date().getTime().toString(),
+  };
+  fileList.value.push(newFile);
 };
+
 const exportFile = () => {
   console.log(2);
 };
 
+// 编辑器
 const editorRef = ref();
+// 打开的文件
 const openFileIds = ref<string[]>([]);
+// 未保存的文件
 const unSaveIds = ref<string[]>([]);
 
+// 为 markdown 传输文案
 const setHtml = async (value: string) => {
   await nextTick();
   editorRef?.value?.initHtml(value);
 };
 
+// 计算打开的文档
 const openFiles = computed(() => {
   const targetFiles: IfileList[] = [];
   openFileIds.value.forEach((id) => {
@@ -66,6 +105,7 @@ const openFiles = computed(() => {
   return targetFiles;
 });
 
+// 获取正在编辑的 markdown 文案
 const getActiveMarkdowContent = (id: string): string => {
   return fileList.value.filter((item) => item.id === id)[0]?.body;
 };
@@ -103,8 +143,14 @@ const showMarkdown = (id: string) => {
   <el-row class="container">
     <el-col :span="6" class="aside">
       <div class="up">
-        <SearchFile title="我的文档" @search="searchFile" />
-        <FileList :file-list="fileList" @delete-file="deleteFile" @edit-file="editFile" @show-markdown="showMarkdown" />
+        <SearchFile ref="searchRef" title="我的文档" @search="searchFile" />
+        <FileList
+          :active-id="activeId"
+          :file-list="showFileList"
+          @delete-file="deleteFile"
+          @edit-file="editFile"
+          @show-markdown="showMarkdown"
+        />
       </div>
       <div class="down">
         <ButtonGroup @create-file="createFile" @export-file="exportFile" />

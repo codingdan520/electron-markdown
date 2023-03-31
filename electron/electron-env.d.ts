@@ -2,8 +2,8 @@
 
 declare namespace NodeJS {
   interface ProcessEnv {
-    DIST_ELECTRON: string
-    DIST: string
-    PUBLIC: string
+    DIST_ELECTRON: string;
+    DIST: string;
+    PUBLIC: string;
   }
 }
