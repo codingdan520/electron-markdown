@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick, computed, watch } from 'vue';
+import { ref, nextTick, computed, watch, toRaw } from 'vue';
 import { v4 as uuid } from 'uuid';
 import SearchFile from '@/components/aside/SearchFile.vue';
 import FileList from '@/components/aside/FileList.vue';
@@ -45,10 +45,12 @@ const deleteFile = (fileId: string) => {
   }
 };
 
-const reName = (id: string, value: string) => {
-  fileList.value.forEach((item) => {
+const savedFile = (id: string, value: string) => {
+  fileList.value.forEach(async (item) => {
     try {
       if (item.id === id) {
+        const res = await electronAPI.savedFile(toRaw(item), value);
+        console.log(res);
         item.title = value;
         item.isNew = false;
         throw new Error();
@@ -77,8 +79,8 @@ const createFile = () => {
 };
 
 const exportFile = async () => {
-  const res = await electronAPI.getFilePath();
-  console.log(res);
+  // const res = await electronAPI.getFilePath();
+  // console.log(res);
 };
 
 // 编辑器
@@ -160,7 +162,7 @@ const showMarkdown = (id: string) => {
           :active-id="activeId"
           :file-list="showFileList"
           @delete-file="deleteFile"
-          @re-name="reName"
+          @re-name="savedFile"
           @show-markdown="showMarkdown"
         />
       </div>

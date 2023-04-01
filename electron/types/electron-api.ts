@@ -1,3 +1,5 @@
+import { IfileList } from '../../src/types/fileList';
+
 export interface IElectronAPI {
-  getFilePath: () => Promise<void>;
+  savedFile: (oldFile: IfileList, newName: string) => Promise<void>;
 }
