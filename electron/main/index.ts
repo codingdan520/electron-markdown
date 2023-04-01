@@ -19,13 +19,13 @@ const url = process.env.VITE_DEV_SERVER_URL;
 let mainWind: BrowserWindow | null = null;
 function createWind() {
   mainWind = new BrowserWindow({
-    icon: join(process.env.PUBLIC, 'favicon.ico'),
+    icon: join(process.env.PUBLIC as string, 'favicon.ico'),
     show: false,
     webPreferences: {
       preload,
       // 渲染进程可以调用 node 中的方法
       nodeIntegration: true,
-      contextIsolation: false,
+      // contextIsolation: false,
     },
   });
 

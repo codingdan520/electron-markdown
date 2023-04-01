@@ -1,14 +1,9 @@
 import { app, ipcMain } from 'electron';
-import { deleteFile } from '../../src/utils/helper';
 import { join } from 'node:path';
+import { IPC_AIP } from '../enum/index';
 
-ipcMain.on('get-file-path', async (evet: any, arg) => {
-  const desktopPath = app.getPath('desktop');
+ipcMain.handle(IPC_AIP.GET_FILE_PATH, async (e, arg) => {
   const path = join(__dirname, '../../src/utils/test.js');
   console.log('-----------------', arg);
-  try {
-    await deleteFile(path);
-  } catch (e) {
-    evet.reply('call-file-path', e);
-  }
+  return path;
 });

@@ -8,8 +8,9 @@ import ButtonGroup from '@/components/aside/ButtonGroup.vue';
 import Tabs from '@/components/content/Tabs.vue';
 import Editor from '@/components/content/Editor.vue';
 import type { IfileList } from './types/fileList';
-import { resolve } from 'node:path';
-import { ipcRenderer } from 'electron';
+
+// 导入 electron 暴露的 api
+const { electronAPI } = window;
 
 let activeId = ref('');
 let searchRef = ref();
@@ -76,16 +77,8 @@ const createFile = () => {
 };
 
 const exportFile = async () => {
-  console.log(2);
-  const path = resolve(__dirname, './utils/test.js');
-  console.log(path);
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // const res = await window.ipcRenderer.send('get-file-path');
-  await ipcRenderer.send('get-file-path', '11');
-  const res = ipcRenderer.on('call-file-path', (event, arg) => {
-    console.log(arg);
-  });
+  const res = await electronAPI.getFilePath();
+  console.log(res);
 };
 
 // 编辑器
