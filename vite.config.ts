@@ -7,10 +7,13 @@ import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import eslintPlugin from 'vite-plugin-eslint';
 import { join } from 'node:path';
+// 路径别名识别插件
+import alias from '@rollup/plugin-alias';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    alias(),
     vue(),
     eslintPlugin({
       include: ['src/**/*.ts', 'src/**/*.vue', 'src/*.ts', 'src/*.vue', 'electron/*.ts', 'electron/**/*.ts'],

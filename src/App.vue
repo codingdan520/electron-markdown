@@ -8,6 +8,8 @@ import ButtonGroup from '@/components/aside/ButtonGroup.vue';
 import Tabs from '@/components/content/Tabs.vue';
 import Editor from '@/components/content/Editor.vue';
 import type { IfileList } from './types/fileList';
+import { resolve } from 'node:path';
+import { ipcRenderer } from 'electron';
 
 let activeId = ref('');
 let searchRef = ref();
@@ -29,7 +31,6 @@ const searchFile = (value: string) => {
     return;
   }
   searchFileList.value = fileList.value.filter((item) => item.title.includes(value));
-  console.log(searchFileList.value);
 };
 
 const deleteFile = (fileId: string) => {
@@ -43,8 +44,7 @@ const deleteFile = (fileId: string) => {
   }
 };
 
-const editFile = (id: string, value: string) => {
-  console.log(id, value);
+const reName = (id: string, value: string) => {
   fileList.value.forEach((item) => {
     try {
       if (item.id === id) {
@@ -75,16 +75,23 @@ const createFile = () => {
   fileList.value.push(newFile);
 };
 
-const exportFile = () => {
+const exportFile = async () => {
   console.log(2);
+  const path = resolve(__dirname, './utils/test.js');
+  console.log(path);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // const res = await window.ipcRenderer.send('get-file-path');
+  await ipcRenderer.send('get-file-path', '11');
+  const res = ipcRenderer.on('call-file-path', (event, arg) => {
+    console.log(arg);
+  });
 };
 
 // 编辑器
 const editorRef = ref();
 // 打开的文件
 const openFileIds = ref<string[]>([]);
-// 未保存的文件
-const unSaveIds = ref<string[]>([]);
 
 // 为 markdown 传输文案
 const setHtml = async (value: string) => {
@@ -111,8 +118,10 @@ const getActiveMarkdowContent = (id: string): string => {
 };
 
 // 切换 markdown tabs
-const toggleTab = (id: string) => {
+const toggleTab = (id: string, preId: string) => {
   if (activeId.value === id) return;
+  // 切换时保存上一个文件
+  saveMarkdown(preId);
   activeId.value = id;
   const valueHtml = fileList.value.filter((item) => item.id === activeId.value)[0]?.body;
   setHtml(valueHtml);
@@ -120,6 +129,8 @@ const toggleTab = (id: string) => {
 
 // 关闭 markdown
 const closeTab = (id: string) => {
+  // 关闭前保存文本
+  saveMarkdown(id);
   // 在最后一个选项时关闭markdown，需要跳转到前一个选项
   if (openFileIds.value.length > 1 && id === activeId.value) {
     // 获取关闭的索引 index
@@ -130,12 +141,20 @@ const closeTab = (id: string) => {
   openFileIds.value = openFileIds.value.filter((fileId: string) => fileId !== id);
 };
 
+const saveMarkdown = (id: string) => {
+  const value: string = editorRef.value.getText();
+  fileList.value.forEach((item) => {
+    if (item.id === id) {
+      item.body = value;
+    }
+  });
+};
+
 // 点击文件名称加载右侧 markdown
 const showMarkdown = (id: string) => {
   activeId.value = id;
   if (openFileIds.value.includes(id)) return;
   openFileIds.value.push(id);
-  console.log(openFileIds.value);
 };
 </script>
 
@@ -148,7 +167,7 @@ const showMarkdown = (id: string) => {
           :active-id="activeId"
           :file-list="showFileList"
           @delete-file="deleteFile"
-          @edit-file="editFile"
+          @re-name="reName"
           @show-markdown="showMarkdown"
         />
       </div>
@@ -158,13 +177,7 @@ const showMarkdown = (id: string) => {
     </el-col>
     <el-col :span="18" class="content">
       <div v-if="openFileIds.length">
-        <Tabs
-          :open-files="openFiles"
-          :active-id="activeId"
-          :un-save-ids="unSaveIds"
-          @toggle-tab="toggleTab"
-          @close-tab="closeTab"
-        />
+        <Tabs :open-files="openFiles" :active-id="activeId" @toggle-tab="toggleTab" @close-tab="closeTab" />
         <Editor ref="editorRef" />
       </div>
       <div v-else class="empty-text">新建或者导入具体文档</div>

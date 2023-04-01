@@ -1,5 +1,6 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
+import './handleFile.ts';
 
 // 配置构建时输出文件目录路径
 process.env.DIST_ELECTRON = join(__dirname, '..');

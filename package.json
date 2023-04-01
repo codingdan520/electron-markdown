@@ -14,7 +14,7 @@
     "vue"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "chcp 65001 & vite",
     "build": "vue-tsc --noEmit && vite build && electron-builder",
     "preview": "vite preview",
     "lint": "eslint src/**/*.{js,jsx,vue,ts,tsx} --fix"
@@ -66,6 +66,7 @@
   "devDependencies": {
     "@babel/core": "^7.21.3",
     "@babel/eslint-parser": "^7.21.3",
+    "@rollup/plugin-alias": "^4.0.3",
     "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",

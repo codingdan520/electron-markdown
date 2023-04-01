@@ -11,7 +11,7 @@ const props = defineProps<{
 const editTitleId = ref<boolean | string>(false);
 
 const emit = defineEmits<{
-  (e: 'edit-file', fileId: string, value: string): void;
+  (e: 're-name', fileId: string, value: string): void;
   (e: 'delete-file', fileId: string): void;
   (e: 'show-markdown', fileId: string): void;
 }>();
@@ -20,7 +20,7 @@ const deleteFile = (fileId: string) => {
   emit('delete-file', fileId);
 };
 
-const editFile = (file: IfileList) => {
+const reName = (file: IfileList) => {
   editTitleId.value = file.id;
   // 如果存在正在新增的文件时，点击其他编辑，需要删除正在新增的文件
   const newFile = props.fileList.find((item) => item.isNew);
@@ -34,8 +34,18 @@ const close = (file?: IfileList) => {
     emit('delete-file', file.id);
   }
 };
-const submitEdit = (id: string, value: string) => {
-  emit('edit-file', id, value);
+
+const submitReName = (id: string, value: string) => {
+  let repeatFlag = props.fileList.find((item) => item.title === value);
+  if (repeatFlag) {
+    // eslint-disable-next-line no-undef
+    ElMessage({
+      message: '文件名已存在',
+      type: 'warning',
+    });
+    return;
+  }
+  emit('re-name', id, value);
   close();
 };
 
@@ -58,7 +68,7 @@ const showMarkdown = (id: string) => {
         "
         @search="
           (value) => {
-            submitEdit(item.id, value);
+            submitReName(item.id, value);
           }
         "
       />
@@ -67,7 +77,7 @@ const showMarkdown = (id: string) => {
         :active="activeId === item.id"
         :file="item"
         @delete-file="deleteFile"
-        @edit-file="editFile"
+        @re-name="reName"
       />
     </li>
   </ul>

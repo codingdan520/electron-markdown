@@ -9,7 +9,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'edit-file', file: IfileList): void;
+  (e: 're-name', file: IfileList): void;
   (e: 'delete-file', fileId: string): void;
 }>();
 
@@ -20,9 +20,9 @@ const deletFile = () => {
   emit('delete-file', id);
 };
 
-const editFile = () => {
+const reName = () => {
   const { file } = props;
-  emit('edit-file', file);
+  emit('re-name', file);
 };
 </script>
 
@@ -34,7 +34,7 @@ const editFile = () => {
     <el-col :span="15">
       <span>{{ file.title }}</span>
     </el-col>
-    <el-col :span="3" @click.stop="editFile">
+    <el-col :span="3" @click.stop="reName">
       <el-icon><Edit /></el-icon>
     </el-col>
     <el-col :span="3" @click.stop="deletFile">
