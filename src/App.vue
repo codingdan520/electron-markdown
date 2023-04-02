@@ -8,6 +8,7 @@ import ButtonGroup from '@/components/aside/ButtonGroup.vue';
 import Tabs from '@/components/content/Tabs.vue';
 import Editor from '@/components/content/Editor.vue';
 import type { IfileList } from './types/fileList';
+import { fi } from 'element-plus/es/locale';
 
 // 导入 electron 暴露的 api
 const { electronAPI } = window;
@@ -34,7 +35,12 @@ const searchFile = (value: string) => {
   searchFileList.value = fileList.value.filter((item) => item.title.includes(value));
 };
 
-const deleteFile = (fileId: string) => {
+const deleteFile = async (fileId: string) => {
+  const file = fileList.value.find((item) => item.id === fileId);
+  if (file) {
+    // 删除磁盘文件
+    await electronAPI.deleteFile(toRaw(file));
+  }
   fileList.value = fileList.value.filter((item) => item.id !== fileId);
   // 修复搜索情况下删除bug
   searchFileList.value = searchFileList.value.filter((item) => item.id !== fileId);
@@ -49,8 +55,8 @@ const savedFile = (id: string, value: string) => {
   fileList.value.forEach(async (item) => {
     try {
       if (item.id === id) {
-        const res = await electronAPI.savedFile(toRaw(item), value);
-        console.log(res);
+        // 保存磁盘文件
+        await electronAPI.savedFile(toRaw(item), value);
         item.title = value;
         item.isNew = false;
         throw new Error();
@@ -137,9 +143,11 @@ const closeTab = (id: string) => {
 };
 
 const saveMarkdown = (id: string) => {
-  const value: string = editorRef.value.getText();
-  fileList.value.forEach((item) => {
+  const value: string = editorRef?.value?.getText();
+  fileList.value.forEach(async (item) => {
     if (item.id === id) {
+      // 编辑磁盘文件
+      await electronAPI.editFile(toRaw(item), value);
       item.body = value;
     }
   });

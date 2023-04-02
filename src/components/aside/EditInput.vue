@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Close } from '@element-plus/icons-vue';
 import { ref, watch } from 'vue';
+
+const { electronAPI } = window;
 const props = withDefaults(
   defineProps<{
     show: boolean;
@@ -29,17 +31,21 @@ watch(
   }
 );
 
-const search = (e: KeyboardEvent) => {
+const search = async (e: KeyboardEvent) => {
   if (e.code === 'Escape') {
     emit('close');
     return;
   }
   if (props.isValidate && !searchValue.value.trim()) {
-    // eslint-disable-next-line no-undef
-    ElMessage({
+    await electronAPI.showMessageBox({
       message: '请输入文本后再按 enter 键！',
       type: 'warning',
     });
+    // eslint-disable-next-line no-undef
+    // ElMessage({
+    //   message: '请输入文本后再按 enter 键！',
+    //   type: 'warning',
+    // });
     return;
   }
   if (e.code === 'Enter') {

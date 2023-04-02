@@ -3,6 +3,8 @@ import type { IfileList } from '@/types/fileList';
 import FileItem from '@/components/aside/FileItem.vue';
 import EditInput from '@/components/aside/EditInput.vue';
 import { ref } from 'vue';
+
+const { electronAPI } = window;
 const props = defineProps<{
   activeId: string;
   fileList: IfileList[];
@@ -35,14 +37,18 @@ const close = (file?: IfileList) => {
   }
 };
 
-const submitReName = (id: string, value: string) => {
+const submitReName = async (id: string, value: string) => {
   let repeatFlag = props.fileList.find((item) => item.title === value);
   if (repeatFlag) {
-    // eslint-disable-next-line no-undef
-    ElMessage({
+    await electronAPI.showMessageBox({
       message: '文件名已存在',
       type: 'warning',
     });
+    // eslint-disable-next-line no-undef
+    // ElMessage({
+    //   message: '文件名已存在',
+    //   type: 'warning',
+    // });
     return;
   }
   emit('re-name', id, value);
