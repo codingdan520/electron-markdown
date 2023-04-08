@@ -1,22 +1,28 @@
 import { app, ipcMain } from 'electron';
 import { IPC_AIP } from '../enum/index';
-import { writeFile, renameFile, deleteFile } from '../utils/helper';
+import { writeFile, renameFile, deleteFile, readFile } from '../utils/helper';
 import { join } from 'node:path';
 import { IfileList } from '@/types/fileList';
 
 const savedPath = app.getPath('desktop') + '\\testMark';
 
-// 保存文件或修改名称
+// 新增文件
 ipcMain.handle(IPC_AIP.SAVED_FILE, async (e, oldFile: IfileList, newTitle: string) => {
-  const { isNew, title, body } = oldFile;
+  const { body } = oldFile;
   try {
-    if (isNew) {
-      // 新增文档
-      writeFile(join(savedPath, `${newTitle}.md`), body);
-    } else {
-      // 修改文档名称
-      renameFile(join(savedPath, `${title}.md`), join(savedPath, `${newTitle}.md`));
-    }
+    // 新增文档
+    writeFile(join(savedPath, `${newTitle}.md`), body);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+// 修改文件名
+ipcMain.handle(IPC_AIP.UPDATED_FILE_NAME, (e, oldFile: IfileList, newTitle: string) => {
+  const { title } = oldFile;
+  try {
+    // 修改文档名称
+    renameFile(join(savedPath, `${title}.md`), join(savedPath, `${newTitle}.md`));
   } catch (e) {
     console.log(e);
   }
@@ -39,6 +45,15 @@ ipcMain.handle(IPC_AIP.DELETE_FILE, async (e, file: IfileList) => {
   try {
     // 修改文档
     deleteFile(join(savedPath, `${title}.md`));
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+// 读取文档内容
+ipcMain.handle(IPC_AIP.READ_FILE, async (e, fileName) => {
+  try {
+    return await readFile(join(savedPath, `${fileName}.md`));
   } catch (e) {
     console.log(e);
   }

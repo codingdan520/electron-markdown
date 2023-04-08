@@ -1,7 +1,7 @@
 {
   "name": "markdown-electron",
   "description": "markdown electron project",
-  "main": "dist-electron/main/index.js",
+  "main": "./dist-electron/main/index.js",
   "private": true,
   "version": "0.0.1",
   "author": "dan",
@@ -59,6 +59,7 @@
     "@vueuse/core": "^9.13.0",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",
+    "electron-store": "^8.1.0",
     "element-plus": "^2.3.1",
     "uuid": "^9.0.0",
     "vue": "^3.2.47"

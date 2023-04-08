@@ -1,25 +1,34 @@
 <script setup lang="ts">
-import { ref, nextTick, computed, watch, toRaw } from 'vue';
+import { ref, nextTick, computed, watch, toRaw, onMounted } from 'vue';
 import { v4 as uuid } from 'uuid';
 import SearchFile from '@/components/aside/SearchFile.vue';
 import FileList from '@/components/aside/FileList.vue';
-import fileListData from '@/mock/initFiles';
+// import fileListData from '@/mock/initFiles';
 import ButtonGroup from '@/components/aside/ButtonGroup.vue';
 import Tabs from '@/components/content/Tabs.vue';
 import Editor from '@/components/content/Editor.vue';
+import { deepClone } from '@/utils/index';
 import type { IfileList } from './types/fileList';
-import { fi } from 'element-plus/es/locale';
 
 // 导入 electron 暴露的 api
 const { electronAPI } = window;
 
 let activeId = ref('');
 let searchRef = ref();
-let fileList = ref<IfileList[]>(fileListData);
+let fileList = ref<IfileList[]>([]);
 let searchFileList = ref<IfileList[]>([]);
+let unSavedIds = ref(['8f289a38-8f45-4d39-9f5e-9a033881ec87']);
 
-watch(activeId, (curent: string) => {
-  const content = getActiveMarkdowContent(curent);
+onMounted(async () => {
+  // 加载内存中的数据
+  const files = await electronAPI.getStoreValue();
+  if (files?.length) {
+    fileList.value = files;
+  }
+});
+
+watch(activeId, async (curent: string) => {
+  const content = await getActiveMarkdowContent(curent);
   setHtml(content);
 });
 
@@ -42,6 +51,7 @@ const deleteFile = async (fileId: string) => {
     await electronAPI.deleteFile(toRaw(file));
   }
   fileList.value = fileList.value.filter((item) => item.id !== fileId);
+  await electronAPI.setStoreValue(deepClone(fileList.value));
   // 修复搜索情况下删除bug
   searchFileList.value = searchFileList.value.filter((item) => item.id !== fileId);
   closeTab(fileId);
@@ -51,19 +61,30 @@ const deleteFile = async (fileId: string) => {
   }
 };
 
-const savedFile = (id: string, value: string) => {
-  fileList.value.forEach(async (item) => {
-    try {
-      if (item.id === id) {
-        // 保存磁盘文件
-        await electronAPI.savedFile(toRaw(item), value);
-        item.title = value;
-        item.isNew = false;
-        throw new Error();
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+const savedFile = async (id: string, value: string) => {
+  const curFile: IfileList | undefined = fileList.value.find((item) => item.id === id);
+  if (!curFile) return;
+  if (curFile.isNew) {
+    curFile.title = value;
+    curFile.isNew = false;
+    await electronAPI.savedFile(toRaw(curFile), value);
+  } else {
+    await electronAPI.updatedFileName(toRaw(curFile), value);
+    curFile.title = value;
+  }
+  savedStore();
+};
+
+const savedStore = async () => {
+  const files = fileList.value.map((item) => {
+    return {
+      id: item.id,
+      isNew: item.isNew,
+      title: item.title,
+      createTime: item.createTime,
+    };
   });
+  await electronAPI.setStoreValue(files);
 };
 
 const createFile = () => {
@@ -78,7 +99,7 @@ const createFile = () => {
     id: uuid(),
     isNew: true,
     title: '',
-    body: '## 初始化内容',
+    body: '初始化内容',
     createTime: new Date().getTime().toString(),
   };
   fileList.value.push(newFile);
@@ -86,6 +107,16 @@ const createFile = () => {
 
 const exportFile = async () => {
   // const res = await electronAPI.getFilePath();
+  // console.log(res);
+  // const newFile: IfileList = {
+  //   id: uuid(),
+  //   isNew: true,
+  //   title: '',
+  //   body: '## 初始化内容',
+  //   createTime: new Date().getTime().toString(),
+  // };
+  // electronAPI.setStoreValue([newFile]);
+  // const res = await electronAPI.getStoreValue();
   // console.log(res);
 };
 
@@ -114,8 +145,13 @@ const openFiles = computed(() => {
 });
 
 // 获取正在编辑的 markdown 文案
-const getActiveMarkdowContent = (id: string): string => {
-  return fileList.value.filter((item) => item.id === id)[0]?.body;
+const getActiveMarkdowContent = async (id: string) => {
+  const curentFile = fileList.value.find((item) => item.id === id);
+  if (curentFile) {
+    const res = await electronAPI.readFile(curentFile.title);
+    return res;
+  }
+  return '';
 };
 
 // 切换 markdown tabs
@@ -142,15 +178,12 @@ const closeTab = (id: string) => {
   openFileIds.value = openFileIds.value.filter((fileId: string) => fileId !== id);
 };
 
-const saveMarkdown = (id: string) => {
+const saveMarkdown = async (id: string) => {
   const value: string = editorRef?.value?.getText();
-  fileList.value.forEach(async (item) => {
-    if (item.id === id) {
-      // 编辑磁盘文件
-      await electronAPI.editFile(toRaw(item), value);
-      item.body = value;
-    }
-  });
+  const curFile = fileList.value.find((item) => item.id === id) as IfileList;
+  // 编辑磁盘文件
+  await electronAPI.editFile(toRaw(curFile), value);
+  curFile.body = value;
 };
 
 // 点击文件名称加载右侧 markdown
@@ -180,7 +213,13 @@ const showMarkdown = (id: string) => {
     </el-col>
     <el-col :span="18" class="content">
       <div v-if="openFileIds.length">
-        <Tabs :open-files="openFiles" :active-id="activeId" @toggle-tab="toggleTab" @close-tab="closeTab" />
+        <Tabs
+          :open-files="openFiles"
+          :un-saved-ids="unSavedIds"
+          :active-id="activeId"
+          @toggle-tab="toggleTab"
+          @close-tab="closeTab"
+        />
         <Editor ref="editorRef" />
       </div>
       <div v-else class="empty-text">新建或者导入具体文档</div>

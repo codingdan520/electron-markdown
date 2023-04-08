@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { CircleCloseFilled } from '@element-plus/icons-vue';
+import { CircleCloseFilled, QuestionFilled } from '@element-plus/icons-vue';
 import type { IfileList } from '@/types/fileList';
 const props = defineProps<{
   activeId: string; // 正在编辑的文档
   openFiles: IfileList[]; // 打开的文档
+  unSavedIds: string[];
 }>();
 const emit = defineEmits<{
   (e: 'toggle-tab', id: string, preId: string): void;
@@ -28,6 +29,7 @@ const closeTab = (id: string) => {
     >
       <span class="text">{{ item.title }}</span>
       <div class="icon-box">
+        <el-icon class="unSaved" color="#999"><QuestionFilled /></el-icon>
         <el-icon
           class="close"
           color="#999"

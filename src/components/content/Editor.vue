@@ -18,6 +18,11 @@ const initHtml = (value: string) => {
   valueHtml.value = value;
 };
 
+// 监听文本修改时，将文本状态置换成未修改状态
+watch(valueHtml, () => {
+  console.log('文本修改了');
+});
+
 // 获取非html文本
 const getText = () => {
   return editorRef.value.getText();
