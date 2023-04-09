@@ -19,6 +19,8 @@ declare module '@vue/runtime-core' {
     ElRow: typeof import('element-plus/es')['ElRow']
     FileItem: typeof import('./src/components/aside/FileItem.vue')['default']
     FileList: typeof import('./src/components/aside/FileList.vue')['default']
+    MavonEditor: typeof import('./src/components/content/MavonEditor.vue')['default']
+    MyEditor: typeof import('./src/components/content/MyEditor.vue')['default']
     SearchFile: typeof import('./src/components/aside/SearchFile.vue')['default']
     Tabs: typeof import('./src/components/content/Tabs.vue')['default']
   }

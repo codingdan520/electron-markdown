@@ -6,7 +6,7 @@ import FileList from '@/components/aside/FileList.vue';
 // import fileListData from '@/mock/initFiles';
 import ButtonGroup from '@/components/aside/ButtonGroup.vue';
 import Tabs from '@/components/content/Tabs.vue';
-import Editor from '@/components/content/Editor.vue';
+import MavonEditor from '@/components/content/MyEditor.vue';
 import { deepClone } from '@/utils/index';
 import type { IfileList } from './types/fileList';
 
@@ -128,7 +128,7 @@ const openFileIds = ref<string[]>([]);
 // 为 markdown 传输文案
 const setHtml = async (value: string) => {
   await nextTick();
-  editorRef?.value?.initHtml(value);
+  editorRef?.value?.initText(value);
 };
 
 // 计算打开的文档
@@ -241,8 +241,7 @@ const savedFileContent = async () => {
           @toggle-tab="toggleTab"
           @close-tab="closeTab"
         />
-        <Editor ref="editorRef" @change-content="changeContent" />
-        <el-button @click="savedFileContent">保存</el-button>
+        <MavonEditor ref="editorRef" @change-content="changeContent" @saved-file-content="savedFileContent" />
       </div>
       <div v-else class="empty-text">新建或者导入具体文档</div>
     </el-col>

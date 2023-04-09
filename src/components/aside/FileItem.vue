@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { Document, Edit, Delete } from '@element-plus/icons-vue';
 import type { IfileList } from '@/types/fileList';
 

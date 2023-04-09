@@ -11,6 +11,9 @@ process.env.DIST = join(process.env.DIST_ELECTRON, '../dist');
 // 配置public 文件目录路径，VITE_DEV_SERVER_URL表示vite默认生成的服务url
 process.env.PUBLIC = process.env.VITE_DEV_SERVER_URL ? join(process.env.DIST_ELECTRON, '../public') : process.env.DIST;
 
+// 关闭控制台警告
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
+
 // 配置打包后的文件加载路径
 const indexHtml = join(process.env.DIST, 'index.html');
 // 这个需要electron加载编译后的js文件
