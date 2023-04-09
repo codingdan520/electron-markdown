@@ -99,25 +99,17 @@ const createFile = () => {
     id: uuid(),
     isNew: true,
     title: '',
-    body: '初始化内容',
+    body: '## 初始化内容',
     createTime: new Date().getTime().toString(),
   };
   fileList.value.push(newFile);
 };
 
 const exportFile = async () => {
-  // const res = await electronAPI.getFilePath();
-  // console.log(res);
-  // const newFile: IfileList = {
-  //   id: uuid(),
-  //   isNew: true,
-  //   title: '',
-  //   body: '## 初始化内容',
-  //   createTime: new Date().getTime().toString(),
-  // };
-  // electronAPI.setStoreValue([newFile]);
-  // const res = await electronAPI.getStoreValue();
-  // console.log(res);
+  await electronAPI.showMessageBox({
+    type: 'info',
+    message: '功能扩展中',
+  });
 };
 
 // 编辑器
