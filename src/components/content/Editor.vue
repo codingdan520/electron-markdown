@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import '@wangeditor/editor/dist/css/style.css'; // 引入 css
-import { onBeforeUnmount, ref, shallowRef, onMounted, nextTick, watch } from 'vue';
+import { onBeforeUnmount, ref, shallowRef, nextTick, watch, Ref } from 'vue';
 import { DomEditor } from '@wangeditor/editor';
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue';
 
@@ -8,9 +8,12 @@ import { Editor, Toolbar } from '@wangeditor/editor-for-vue';
 const editorRef = shallowRef();
 const mode = ref<'default' | 'simple'>('default');
 
+const emit = defineEmits<{
+  (e: 'change-content', value: string): void;
+}>();
+
 // 内容 HTML
 const valueHtml = ref('');
-
 const toolbarConfig = {};
 const editorConfig = { placeholder: '请输入内容...' };
 
@@ -20,7 +23,7 @@ const initHtml = (value: string) => {
 
 // 监听文本修改时，将文本状态置换成未修改状态
 watch(valueHtml, () => {
-  console.log('文本修改了');
+  emit('change-content', getText());
 });
 
 // 获取非html文本

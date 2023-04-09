@@ -17,7 +17,7 @@ let activeId = ref('');
 let searchRef = ref();
 let fileList = ref<IfileList[]>([]);
 let searchFileList = ref<IfileList[]>([]);
-let unSavedIds = ref(['8f289a38-8f45-4d39-9f5e-9a033881ec87']);
+let unSavedIds = ref<string[]>([]);
 
 onMounted(async () => {
   // 加载内存中的数据
@@ -148,8 +148,9 @@ const openFiles = computed(() => {
 const getActiveMarkdowContent = async (id: string) => {
   const curentFile = fileList.value.find((item) => item.id === id);
   if (curentFile) {
-    const res = await electronAPI.readFile(curentFile.title);
-    return res;
+    // 优先获取内存中的内容
+    if (curentFile.body) return curentFile.body;
+    return await electronAPI.readFile(curentFile.title);
   }
   return '';
 };
@@ -157,10 +158,10 @@ const getActiveMarkdowContent = async (id: string) => {
 // 切换 markdown tabs
 const toggleTab = (id: string, preId: string) => {
   if (activeId.value === id) return;
-  // 切换时保存上一个文件
-  saveMarkdown(preId);
+  // // 切换时保存上一个文件
+  // saveMarkdown(preId);
   activeId.value = id;
-  const valueHtml = fileList.value.filter((item) => item.id === activeId.value)[0]?.body;
+  const valueHtml = fileList.value.find((item) => item.id === activeId.value)?.body as string;
   setHtml(valueHtml);
 };
 
@@ -179,11 +180,11 @@ const closeTab = (id: string) => {
 };
 
 const saveMarkdown = async (id: string) => {
-  const value: string = editorRef?.value?.getText();
-  const curFile = fileList.value.find((item) => item.id === id) as IfileList;
+  // const value: string = editorRef?.value?.getText();
+  const findFile = fileList.value.find((item) => item.id === id) as IfileList;
   // 编辑磁盘文件
-  await electronAPI.editFile(toRaw(curFile), value);
-  curFile.body = value;
+  await electronAPI.editFile(toRaw(findFile), findFile.body);
+  // curFile.body = value;
 };
 
 // 点击文件名称加载右侧 markdown
@@ -191,6 +192,26 @@ const showMarkdown = (id: string) => {
   activeId.value = id;
   if (openFileIds.value.includes(id)) return;
   openFileIds.value.push(id);
+};
+
+// 更新内存中的body内容
+const changeContent = async (value: string) => {
+  const curFile = fileList.value.find((item) => item.id === activeId.value);
+  if (curFile) {
+    const diskFileConent = await electronAPI.readFile(curFile.title);
+    if (diskFileConent !== value) {
+      unSavedIds.value = [...unSavedIds.value, curFile.id];
+    } else {
+      unSavedIds.value = unSavedIds.value.filter((id) => id !== curFile.id);
+    }
+    curFile.body = value;
+  }
+};
+
+const savedFileContent = async () => {
+  const curentId = activeId.value;
+  await saveMarkdown(curentId);
+  unSavedIds.value = unSavedIds.value.filter((id) => id !== curentId);
 };
 </script>
 
@@ -220,7 +241,8 @@ const showMarkdown = (id: string) => {
           @toggle-tab="toggleTab"
           @close-tab="closeTab"
         />
-        <Editor ref="editorRef" />
+        <Editor ref="editorRef" @change-content="changeContent" />
+        <el-button @click="savedFileContent">保存</el-button>
       </div>
       <div v-else class="empty-text">新建或者导入具体文档</div>
     </el-col>

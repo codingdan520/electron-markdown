@@ -27,9 +27,11 @@ const closeTab = (id: string) => {
       :class="{ active: activeId === item.id }"
       @click="toggleTab(item.id, activeId)"
     >
-      <span class="text">{{ item.title }}</span>
+      <div class="text">{{ item.title }}</div>
       <div class="icon-box">
-        <el-icon class="unSaved" color="#999"><QuestionFilled /></el-icon>
+        <el-icon v-show="unSavedIds.includes(item.id)" class="unSaved" color="#999">
+          <QuestionFilled />
+        </el-icon>
         <el-icon
           class="close"
           color="#999"
@@ -50,7 +52,9 @@ const closeTab = (id: string) => {
   background-color: #b8dec6;
   .tabs-item {
     height: 100%;
+    min-width: 100px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
     box-sizing: border-box;
     padding: 0 10px;
@@ -59,11 +63,19 @@ const closeTab = (id: string) => {
     .icon-box {
       width: 16px;
       height: 16px;
+      overflow: hidden;
     }
     &:hover > .icon-box .close {
       display: block;
     }
+    &:hover > .icon-box .unSaved {
+      display: none;
+    }
     .text {
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       margin-right: 10px;
     }
     .close {

@@ -32,7 +32,7 @@ const reName = () => {
       <el-icon><Document /></el-icon>
     </el-col>
     <el-col :span="15">
-      <span>{{ file.title }}</span>
+      <div class="text">{{ file.title }}</div>
     </el-col>
     <el-col :span="3" @click.stop="reName">
       <el-icon><Edit /></el-icon>
@@ -46,6 +46,13 @@ const reName = () => {
 <style scoped lang="scss">
 .file-item {
   padding: 0 5px;
+}
+.text {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 10px;
 }
 .actived {
   background-color: #b8dec6;
