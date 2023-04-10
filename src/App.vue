@@ -150,8 +150,6 @@ const getActiveMarkdowContent = async (id: string) => {
 // 切换 markdown tabs
 const toggleTab = (id: string, preId: string) => {
   if (activeId.value === id) return;
-  // // 切换时保存上一个文件
-  // saveMarkdown(preId);
   activeId.value = id;
   const valueHtml = fileList.value.find((item) => item.id === activeId.value)?.body as string;
   setHtml(valueHtml);
